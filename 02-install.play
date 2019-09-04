@@ -1,0 +1,20 @@
+---
+- hosts: target
+  tasks:
+
+  - name: Copy installation script to live environment
+    template:
+      src: install-scripts/install.sh.j2
+      dest: /root/install.sh
+      mode: "u+rx"
+
+  - name: Copy installation Chroot script to live environment
+    template:
+      src: install-scripts/chroot.sh.j2
+      dest: /root/chroot.sh
+      mode: "u+rx"
+
+  - name: Execute installation script
+    shell: ./install.sh {{ target_drive }}
+    args:
+      chdir: /root

@@ -1,0 +1,13 @@
+---
+- hosts: target
+  tasks:
+
+  - name: authorize this controller machine to SSH to the target
+    authorized_key:
+      user: root
+      state: present
+      key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+
+
+  

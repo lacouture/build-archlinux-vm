@@ -1,0 +1,36 @@
+all:
+  hosts:
+    target:
+      ansible_host:  "192.168.122.30"
+      ansible_port:  22
+      ansible_user:  "root"
+
+      # The drive onto which the system shall be installed
+      # Typically:
+      # /dev/hda for the first IDE disk drive
+      # /dev/sda for the first SCSI, SATA or USB drive
+      # /dev/vda for the first Virtual drive
+      target_drive:  "/dev/vda"
+
+      # Swapfile size in GB (0 to skip swapfile creation) 
+      swap_size: 4
+
+      # The Arch repository URL
+      arch_repo_url: "https://archive.archlinux.org/repos/last/$repo/os/$arch"
+
+      # The Linux kernel variant: "linux" or 'linux-lts" 
+      kernel_variant: "linux-lts"
+
+      hostname: "test_arch"
+      username: "see"
+
+      # Time zone Region/City. The list is in /usr/share/zoneinfo/.
+      timezone: "Europe/Paris"
+
+      # Space-separated list of name servers
+      nameservers: "9.9.9.9 1.1.1.1"
+
+      locale: "en_US.UTF-8"
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
