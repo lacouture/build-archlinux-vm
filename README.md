@@ -23,9 +23,6 @@ Then type the following:
 # systemctl start sshd
 ````
 
-Connect to the SSH server from the controller machine, and add the host's fingerprint to
-the known hosts list (~/.ssh/known_hosts).
-
 Execute the script `01-bootstrap-ssh.sh`.
 It will ask for the target's root password entered in the previous step.
 

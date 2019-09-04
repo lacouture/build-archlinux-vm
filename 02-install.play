@@ -2,19 +2,87 @@
 - hosts: target
   tasks:
 
-  - name: Copy installation script to live environment
-    template:
-      src: install-scripts/install.sh.j2
-      dest: /root/install.sh
-      mode: "u+rx"
+  - name: Create disk label
+    parted:
+      device: "{{ target_drive }}"
+      label: msdos
 
-  - name: Copy installation Chroot script to live environment
-    template:
-      src: install-scripts/chroot.sh.j2
-      dest: /root/chroot.sh
-      mode: "u+rx"
+  - name: Create root partition
+    parted:
+      device: "{{ target_drive }}"
+      number: 1
+      state: present
+      flags:
+      - boot
 
-  - name: Execute installation script
-    shell: ./install.sh {{ target_drive }}
+  - name: Create root filesystem
+    filesystem:
+      dev: "{{ target_drive}}1"
+      fstype: ext4
+      force: yes
+
+  - name: Mount root partition
+    mount:
+      path: /mnt
+      src: "{{ target_drive }}1"
+      state: mounted
+      fstype: ext4
+
+  - name: Define Arch repo
+    copy:
+      content: 'Server = {{ arch_repo_url }}'
+      dest: /etc/pacman.d/mirrorlist
+
+  - name: Refresh repo package list
+    pacman:
+      update_cache: yes
+      update_cache_extra_args: -y
+
+  - name: bootstrap Archlinux onto the target rootfs
+    shell: pacstrap /mnt $(pacman -Sqg base | sed 's/^linux$/{{ kernel_variant }}/') grub openssh sudo
     args:
       chdir: /root
+
+  - name: generate fstab
+    shell: genfstab -p /mnt >> /mnt/etc/fstab
+    args:
+      chdir: /root
+
+  - name: Copy installation Chroot script to target drive
+    template:
+      src: chroot.sh.j2
+      dest: /mnt/chroot.sh
+      mode: "u+rx"
+
+  - name: Create root's .ssh directory
+    file:
+      path: /mnt/root/.ssh
+      state: directory
+      mode: "700"
+
+  - name: Copy authorized keys file to root user
+    copy:
+      remote_src: yes
+      src: /root/.ssh/authorized_keys
+      dest: /mnt/root/.ssh/authorized_keys
+
+  - name: Execute installation operations in chroot
+    shell: arch-chroot /mnt ./chroot.sh "{{ target_drive }}"
+
+  - name: Remove chroot script from target drive
+    file:
+      path: /mnt/chroot.sh
+      state: absent
+
+  - name: Copy authorized keys file to user directory
+    copy:
+      remote_src: yes
+      src: /root/.ssh/authorized_keys
+      dest: "/mnt/home/{{ username }}/.ssh/authorized_keys"
+
+  - name: unmount target drive
+    mount:
+      path: /mnt
+      src: "{{ target_drive }}1"
+      state: unmounted
+      
