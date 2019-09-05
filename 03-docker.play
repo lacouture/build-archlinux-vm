@@ -1,0 +1,25 @@
+---
+- hosts: target
+  tasks:
+
+  - name: Install docker and related packages
+    pacman:
+      name:
+      - docker
+      - docker-compose
+      - python-docker
+      state: present
+      update_cache: yes
+
+  - name: add user to docker group
+    user:
+      name: "{{ username }}"
+      groups:
+      - docker
+      append: yes
+
+  - name: Enable docker service
+    systemd:
+      name: docker.service
+      enabled: yes
+      state: started
