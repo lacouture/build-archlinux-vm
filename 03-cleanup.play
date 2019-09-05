@@ -3,7 +3,7 @@
   tasks:
 
   - name: Cleanup pacman cache
-    shell: pacman -Scc
+    shell: pacman -Scc --noconfirm
 
   - name: Discard unused hard drive space
     shell: fstrim -a
