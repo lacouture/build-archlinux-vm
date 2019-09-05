@@ -81,6 +81,14 @@ on the hard drive from now on.
 
 Recommended: reclaim some space by running `03-cleanup.sh`.
 
+If it's a QEMU-KVM virtual machine with a QCOW2 volume file, the discarded space can be actually reclaimed
+from the QCOW2 file using this command:
+
+```bash
+$ mv IMAGE-FILE.qcow2 IMAGE-FILE-backup.qcow2
+$ qemu-img convert -O qcow2 IMAGE-FILE-backup.qcow2 IMAGE-FILE.qcow2
+```
+
 If it's a VM, it's a good idea to take a snapshot or a copy of the drive image, so you can start from
 this base image to customize the later steps.
 
