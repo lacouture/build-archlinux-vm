@@ -1,0 +1,6 @@
+#!/bin/bash
+
+IP=$(ansible-inventory -i inventory.yaml --host=liveinstall_run -y | grep '^ansible_host: ' | sed 's/^ansible_host: //')
+
+ssh-keyscan $IP >> ~/.ssh/known_hosts
+ansible-playbook -i inventory.yaml --limit liveinstall_run, --ask-pass bootstrap-ssh.play

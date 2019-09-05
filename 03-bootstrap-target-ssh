@@ -1,0 +1,6 @@
+#!/bin/bash
+
+IP=$(ansible-inventory -i inventory.yaml --host=target_run -y | grep '^network_address: ' | sed 's/^network_address: //')
+
+ssh-keyscan $IP >> ~/.ssh/known_hosts
+ansible-playbook -i inventory.yaml --limit target_run --ask-pass bootstrap-ssh.play

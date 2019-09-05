@@ -1,0 +1,10 @@
+[Match]
+Name={{ interface_name }}
+
+[Network]
+Address={{ network_cidr }}
+Gateway={{ network_gateway }}
+{% for dns_server in network_dns_servers %}
+DNS={{ dns_server }}
+{% endfor %}
+Domains={{ ",".join(network_dns_domains) }}

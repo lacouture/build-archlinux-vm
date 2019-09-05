@@ -1,5 +1,5 @@
 ---
-- hosts: target
+- hosts: target_run
   tasks:
 
   - name: Cleanup pacman cache

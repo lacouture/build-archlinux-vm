@@ -1,5 +1,5 @@
 ---
-- hosts: target
+- hosts: all
   tasks:
 
   - name: authorize this controller machine to SSH to the target

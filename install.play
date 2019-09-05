@@ -1,5 +1,5 @@
 ---
-- hosts: target
+- hosts: liveinstall_run
   tasks:
 
   - name: Create disk label
@@ -67,13 +67,26 @@
       src: /root/.ssh/authorized_keys
       dest: /mnt/root/.ssh/authorized_keys
 
+  - name: Install network configuration
+    template:
+      src: "10-wired-{{ network_mode }}.network.j2"
+      dest: "/mnt/etc/systemd/network/10-wired-{{ network_mode }}.network"
+
   - name: Execute installation operations in chroot
-    shell: arch-chroot /mnt ./chroot.sh "{{ target_drive }}"
+    shell: arch-chroot /mnt ./chroot.sh
 
   - name: Remove chroot script from target drive
     file:
       path: /mnt/chroot.sh
       state: absent
+
+  - name: Configure dns resolution to use systemd-networkd when in DHCP mode
+    file:
+      src: /run/systemd/resolve/resolv.conf
+      path: /mnt/etc/resolv.conf
+      state: link
+      force: yes   # The link's target path is relative to the target system
+    when: network_mode == "dhcp"
 
   - name: Copy authorized keys file to user directory
     copy:
