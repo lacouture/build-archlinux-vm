@@ -1,0 +1,9 @@
+---
+- hosts: target
+  tasks:
+
+  - name: Cleanup pacman cache
+    shell: pacman -Scc
+
+  - name: Discard unused hard drive space
+    shell: fstrim -a

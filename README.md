@@ -75,8 +75,11 @@ On the controller machine, execute the installation script:
 $ ./02-install.sh
 ````
 
+
 Power off the target machine and remove the installation medium to be sure that it will boot
 on the hard drive from now on.
+
+Recommended: reclaim some space by running `03-cleanup.sh`.
 
 If it's a VM, it's a good idea to take a snapshot or a copy of the drive image, so you can start from
 this base image to customize the later steps.
@@ -87,8 +90,12 @@ Personalization stage
 
 Extra scripts allow to personalize the machine to fit its intended purpose.
 
-- `03-cloud-init.sh`: Prepare the machine to be configurable using Cloud-init.
+- `03-cleanup.sh`: Cleanup pacman cache and trim filesystem. This can be executed anytime.
 - `03-docker.sh`: Install docker.
+
+Future scripts (not implemented yet):
+
+- `03-cloud-init.sh`: Prepare the machine to be configurable using Cloud-init.
 - `03-arch-develop.sh`: prepare the system to allow the development of Arch packages.
 - `03-libvirt.sh`: Install libvirt and QEMU-KVM virtualization solution.
 - `03-kubernetes.sh`: Install a kubernetes platform.
