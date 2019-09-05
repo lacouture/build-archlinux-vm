@@ -26,8 +26,6 @@ useradd -m -G wheel -s /bin/bash "$USERNAME"
 # adding public key both to root and user for ssh key access
 mkdir -m 700 "$HOME_DIR/.ssh"
 mkdir -m 700 /root/.ssh
-#cp /authorized_keys "/$HOME_DIR/.ssh"
-#cp /authorized_keys /root/.ssh
 cp /root/.ssh/authorized_keys "$HOME_DIR/.ssh/"
 chown -R "$USERNAME:$USERNAME" "$HOME_DIR/.ssh"
 
@@ -53,4 +51,3 @@ then
     mkswap /swapfile
     echo /swapfile none swap defaults 0 0 >> /etc/fstab
 fi
-
