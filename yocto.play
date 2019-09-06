@@ -1,0 +1,31 @@
+---
+- hosts: target_run
+  tasks:
+
+  - name: Install packages required by Yocto
+    pacman:
+      name:
+      - docker
+      - docker-compose
+      - python-docker
+      - autoconf
+      - automake
+      - chrpath
+      - cpio
+      - diffstat
+      - fakeroot
+      - gcc
+      - git
+      - help2man
+      - iproute2
+      - jfsutils
+      - make
+      - nano
+      - patch
+      - pcre2
+      - python
+      - python2
+      - vi
+      - wget
+      state: present
+      update_cache: yes

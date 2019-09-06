@@ -114,6 +114,7 @@ Extra scripts allow to personalize the machine to fit its intended purpose.
 
 - `04-cleanup`: Cleanup pacman cache and trim filesystem. This can be executed anytime.
 - `04-docker`: Install docker.
+- `04-yocto`: Setup Yocto development platform.
 
 Future scripts (not implemented yet):
 
@@ -122,7 +123,6 @@ Future scripts (not implemented yet):
 - `04-libvirt`: Install libvirt and QEMU-KVM virtualization solution.
 - `04-kubernetes`: Install a kubernetes platform.
 - `04-jenkins-node`: Setup the machine as a Jenkins slave node.
-- `04-yocto`: Setup Yocto development platform.
 
 The scripts above may be combined. For instance if I need a Jenkins node to produce Docker images,
 I may run both `04-docker` and `04-jenkins-node`.
