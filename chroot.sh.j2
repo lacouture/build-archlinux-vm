@@ -16,7 +16,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 # run these following essential service by default
 systemctl enable sshd.service
 systemctl enable systemd-networkd.service
-{% if network_mode == "dhcp" %}
+{% if resolve_mode == "systemd-resolved" %}
   systemctl enable systemd-resolved.service
 {% endif %}
 

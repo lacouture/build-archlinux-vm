@@ -37,6 +37,11 @@ all:
         # The Arch repository URL
         arch_repo_url: "https://archive.archlinux.org/repos/last/$repo/os/$arch"
 
+        # If set to no, disable the verification of the package signatures.
+        # This is useful when installing from an old archive of the repository.
+        # Only use this with a trusted, locally stored copy of the repository.
+        check_package_signatures: no
+
         # The Linux kernel variant: "linux" or 'linux-lts" 
         kernel_variant: "linux-lts"
 
@@ -66,6 +71,10 @@ all:
         # Gateway (static mode only)
         network_gateway: 192.168.166.66
 
+        # Mode of domain name resolution
+        # "systemd-resolved"
+        # "resolv.conf"
+        resolve_mode: resolv.conf
         # List of DNS servers (static mode only)
         network_dns_servers:
         - 192.168.166.66
