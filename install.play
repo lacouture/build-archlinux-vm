@@ -34,10 +34,21 @@
       content: 'Server = {{ arch_repo_url }}'
       dest: /etc/pacman.d/mirrorlist
 
+  - name: If requested, ignore package signatures
+    ini_file:
+      path: /etc/pacman.conf
+      section: options
+      option: SigLevel
+      value: Never
+    when: not check_package_signatures
+
   - name: Refresh repo package list
     pacman:
       update_cache: yes
       update_cache_extra_args: -y
+
+  - name: Set archlinux-keyring in sync with repository
+    shell: pacman -S archlinux-keyring --noconfirm
 
   - name: bootstrap Archlinux onto the target rootfs
     shell: pacstrap /mnt $(pacman -Sqg base | sed 's/^linux$/{{ kernel_variant }}/') grub openssh sudo python
