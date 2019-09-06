@@ -3,6 +3,8 @@ Install ArchLinux in a VM for server usage
 
 This project automates the deployment of an ArchLinux OS instance onto a VM, using Ansible.
 
+It is inspired by Van Nguyen's blog post: https://shirotech.com/linux/how-to-automate-arch-linux-installation/
+
 It produces a very simple system, with:
 
 - a single EXT4 partition,
