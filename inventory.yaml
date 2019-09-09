@@ -31,6 +31,11 @@ all:
         # /dev/vda for the first Virtual drive
         target_drive:  "/dev/vda"
 
+        # The type of filesystem used for root volume.
+        # ext4 or btrfs
+        # If the filesystem is BTRFS, a @root subvolume will be created for the
+        # system's root (/) mountpoint.
+        filesystem_type: btrfs
         # Swapfile size in GB (0 to skip swapfile creation) 
         swap_size: 4
 
