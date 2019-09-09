@@ -169,8 +169,6 @@
       src: /root/.ssh/authorized_keys
       dest: "/mnt/@root/home/{{ username }}/.ssh/authorized_keys"
 
-  - name: setup zone
-
   - name: unmount EFI volume
     mount:
       path: /mnt/@root/efi
