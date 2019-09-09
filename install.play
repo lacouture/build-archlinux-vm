@@ -18,16 +18,37 @@
   - name: Create root filesystem
     filesystem:
       dev: "{{ target_drive}}1"
-      fstype: ext4
+      fstype: btrfs
       force: yes
 
-  - name: Mount root partition
+  - name: Create mount points
+    file:
+      path: "{{ item }}"
+      state: directory
+    with_items:
+    - /mnt/btrfs_volume
+    - /mnt/@root
+
+  - name: Mount root btrfs filesystem
     mount:
-      path: /mnt
+      path: /mnt/btrfs_volume
       src: "{{ target_drive }}1"
       state: mounted
-      fstype: ext4
+      fstype: btrfs
       opts: defaults,discard
+
+  - name: Create @root subvolume
+    command: btrfs subvolume create /mnt/btrfs_volume/@root
+    args:
+      creates: /mnt/btrfs_volume/@root
+
+  - name: Mount root subvolume
+    mount:
+      path: /mnt/@root
+      src: "{{ target_drive }}1"
+      state: mounted
+      fstype: btrfs
+      opts: defaults,discard,subvol=@root
 
   - name: Define Arch repo
     copy:
@@ -51,24 +72,24 @@
     shell: pacman -S archlinux-keyring --noconfirm
 
   - name: bootstrap Archlinux onto the target rootfs
-    shell: pacstrap /mnt $(pacman -Sqg base | sed 's/^linux$/{{ kernel_variant }}/') grub openssh sudo python
+    shell: pacstrap /mnt/@root $(pacman -Sqg base | sed 's/^linux$/{{ kernel_variant }}/') grub openssh sudo python
     args:
       chdir: /root
 
   - name: generate fstab
-    shell: genfstab -p /mnt >> /mnt/etc/fstab
+    shell: genfstab -p /mnt/@root >> /mnt/@root/etc/fstab
     args:
       chdir: /root
 
   - name: Copy installation Chroot script to target drive
     template:
       src: chroot.sh.j2
-      dest: /mnt/chroot.sh
+      dest: /mnt/@root/chroot.sh
       mode: "u+rx"
 
   - name: Create root's .ssh directory
     file:
-      path: /mnt/root/.ssh
+      path: /mnt/@root/root/.ssh
       state: directory
       mode: "700"
 
@@ -76,25 +97,25 @@
     copy:
       remote_src: yes
       src: /root/.ssh/authorized_keys
-      dest: /mnt/root/.ssh/authorized_keys
+      dest: /mnt/@root/root/.ssh/authorized_keys
 
   - name: Install network configuration
     template:
       src: "10-wired-{{ network_mode }}.network.j2"
-      dest: "/mnt/etc/systemd/network/10-wired-{{ network_mode }}.network"
+      dest: "/mnt/@root/etc/systemd/network/10-wired-{{ network_mode }}.network"
 
   - name: Execute installation operations in chroot
-    shell: arch-chroot /mnt ./chroot.sh
+    shell: arch-chroot /mnt/@root ./chroot.sh
 
   - name: Remove chroot script from target drive
     file:
-      path: /mnt/chroot.sh
+      path: /mnt/@root/chroot.sh
       state: absent
 
   - name: Configure dns resolution to use systemd-resolved if requested
     file:
       src: /run/systemd/resolve/resolv.conf
-      path: /mnt/etc/resolv.conf
+      path: /mnt/@root/etc/resolv.conf
       state: link
       force: yes   # The link's target path is relative to the target system
     when: resolve_mode == "systemd-resolved"
@@ -102,18 +123,21 @@
   - name: Configure resolv.conf if requested
     template:
       src: resolv.conf.j2
-      dest: /mnt/etc/resolv.conf
+      dest: /mnt/@root/etc/resolv.conf
     when: resolve_mode == "resolv.conf"
 
   - name: Copy authorized keys file to user directory
     copy:
       remote_src: yes
       src: /root/.ssh/authorized_keys
-      dest: "/mnt/home/{{ username }}/.ssh/authorized_keys"
+      dest: "/mnt/@root/home/{{ username }}/.ssh/authorized_keys"
+
+  - name: unmount root subvolume
+    mount:
+      path: /mnt/@root
+      state: unmounted
 
   - name: unmount target drive
     mount:
-      path: /mnt
-      src: "{{ target_drive }}1"
+      path: /mnt/btrfs_volume
       state: unmounted
-      
