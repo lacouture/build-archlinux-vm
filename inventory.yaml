@@ -56,7 +56,11 @@ all:
         # Time zone Region/City. The list is in /usr/share/zoneinfo/.
         timezone: "Europe/Paris"
 
+        # System locale (language)
         locale: "en_US.UTF-8"
+
+        # Keyboard mapping
+        keymap: "fr-latin1"
 
         # Network mode: dhcp or static
         network_mode: static

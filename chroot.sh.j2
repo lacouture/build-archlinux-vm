@@ -36,8 +36,9 @@ ln -f -s /usr/share/zoneinfo/{{ timezone }} /etc/localtime
 
 # adjust your name servers here if you don't want to use google
 echo {{ locale }} UTF-8 > /etc/locale.gen
-echo LANG={{ locale }} > /etc/locale.conf
 locale-gen
+echo LANG={{ locale }} > /etc/locale.conf
+echo KEYMAP={{ keymap }} > /etc/vconsole.conf
 
 # because we are using ssh keys, make sudo not ask for passwords
 echo 'root ALL=(ALL) ALL' > /etc/sudoers
