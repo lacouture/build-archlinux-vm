@@ -2,35 +2,37 @@
 - hosts: liveinstall_run
   tasks:
 
-  - name: Erase and (re)create partition table
+  - name: Erase and (re)create hybrid partition table
     command: sgdisk -o {{ target_drive }} \
-                    --new=1:0:+100M           -t 0:ef00 -c 0:efi \
-                    --new=2:0:{{swap_size}}G -t 0:8200 -c 0:swap \
-                    --new=3:0:0               -t 0:8300 -c 0:root
+                    --new=1:0:+1M             -t 0:ef02 -c 0:mbr_bios \
+                    --new=2:0:+100M           -t 0:ef00 -c 0:efi \
+                    --new=3:0:{{swap_size}}G  -t 0:8200 -c 0:swap \
+                    --new=4:0:0               -t 0:8300 -c 0:root
     when: swap_size != 0
 
   - name: Erase and (re)create partition table
     command: sgdisk -o {{ target_drive }} \
-                    --new=1:0:+100M           -t 0:ef00 -c 0:efi \
-                    --new=3:0:0               -t 0:8300 -c 0:root
+                    --new=1:0:+1M             -t 0:ef02 -c 0:mbr_bios \
+                    --new=2:0:+100M           -t 0:ef00 -c 0:efi \
+                    --new=4:0:0               -t 0:8300 -c 0:root
     when: swap_size == 0
 
   - name: Create EFI filesystem
     filesystem:
-      dev: "{{ target_drive }}1"
+      dev: "{{ target_drive }}2"
       fstype: vfat
       force: yes
 
   - name: Create Swap
     filesystem:
-      dev: "{{ target_drive }}2"
+      dev: "{{ target_drive }}3"
       fstype: swap
       force: yes
     when: swap_size != 0
 
   - name: Create root filesystem
     filesystem:
-      dev: "{{ target_drive}}3"
+      dev: "{{ target_drive}}4"
       fstype: "{{ filesystem_type }}"
       force: yes
 
@@ -45,7 +47,7 @@
   - name: Mount root btrfs filesystem
     mount:
       path: /mnt/btrfs_volume
-      src: "{{ target_drive }}3"
+      src: "{{ target_drive }}4"
       state: mounted
       fstype: btrfs
       opts: defaults,discard
@@ -60,7 +62,7 @@
   - name: Mount root subvolume
     mount:
       path: /mnt/@root
-      src: "{{ target_drive }}3"
+      src: "{{ target_drive }}4"
       state: mounted
       fstype: btrfs
       opts: defaults,discard,subvol=@root
@@ -69,7 +71,7 @@
   - name: Mount root filesystem
     mount:
       path: /mnt/@root
-      src: "{{ target_drive }}3"
+      src: "{{ target_drive }}4"
       state: mounted
       fstype: "{{ filesystem_type }}"
       opts: defaults,discard
@@ -83,7 +85,7 @@
   - name: Mount EFI filesystem
     mount:
       path: /mnt/@root/efi
-      src: "{{ target_drive }}1"
+      src: "{{ target_drive }}2"
       state: mounted
       fstype: vfat
 
