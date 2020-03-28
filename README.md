@@ -115,6 +115,7 @@ Extra scripts allow to personalize the machine to fit its intended purpose.
 - `04-cleanup`: Cleanup pacman cache and trim filesystem. This can be executed anytime.
 - `04-docker`: Install docker.
 - `04-yocto`: Setup Yocto development platform.
+- `04-kde-plasma`: Setup Xorg, KDE Plasma desktop environment and SDDM display manager
 
 Future scripts (not implemented yet):
 

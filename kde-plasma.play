@@ -1,0 +1,57 @@
+---
+- hosts: target_run
+  tasks:
+
+  - name: Install packages required by KDE Plasma
+    pacman:
+      name:
+      - haveged
+      - xorg
+      - xf86-video-intel
+      - mesa
+      - sddm
+      - sddm-kcm
+      - plasma-meta
+      - konsole
+      - qt5-virtualkeyboard
+      state: present
+      update_cache: yes
+
+  - name: Enable haveged pseudo-random generator
+    systemd:
+      name: haveged.service
+      enabled: yes
+      state: started
+
+  - name: install SDDM configuration
+    copy:
+      src: '{{item}}'
+      dest: /etc/sddm.conf.d/
+    with_items:
+      - sddm/autologin.conf
+      - sddm/numlock.conf
+      - sddm/theme.conf
+
+  - name: Set X11 default locale for French Keyboard
+    command: localectl --no-convert set-x11-keymap fr pc105, oss
+
+  - name: Enable display manager
+    systemd:
+      name: sddm.service
+      enabled: yes
+      state: started
+
+  - name: Install additional services and applications
+    pacman:
+      name:
+      - networkmanager
+      - plasma-nm
+      - powerdevil
+      - konsole
+      state: present
+
+  - name: Enable and start NetworkManager service
+    systemd:
+      name: NetworkManager.service
+      enabled: yes
+      state: started
