@@ -138,6 +138,11 @@
       src: /root/.ssh/authorized_keys
       dest: /mnt/@root/root/.ssh/authorized_keys
 
+  - name: Create network configuration directory
+    file:
+      path: "/mnt/@root/etc/systemd/network"
+      state: directory
+
   - name: Install network configuration
     template:
       src: "10-wired-{{ network_mode }}.network.j2"
