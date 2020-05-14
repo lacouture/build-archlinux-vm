@@ -1,0 +1,77 @@
+all:
+  hosts:
+    liveinstall_run:
+      # Configuration of the target during the initial execution of the Live installation medium.
+      
+      ansible_host:  "192.168.166.94"
+      ansible_port:  22
+      ansible_user:  "root"
+    
+    target_run:
+      # Configuration of the target when booting on its installed drive.
+      
+      ansible_host:  "{{ network_address }}"
+      ansible_port:  22
+      ansible_user:  "root"
+
+    vars:
+      ansible_python_interpreter: /usr/bin/python3
+
+  children:
+    target:
+      # Here we define common parameters applicable both to liveinstall and target runs.
+      hosts:
+        liveinstall_run:
+        target_run:
+      vars:
+        # The drive onto which the system shall be installed
+        # Typically:
+        # /dev/hda for the first IDE disk drive
+        # /dev/sda for the first SCSI, SATA or USB drive
+        # /dev/vda for the first Virtual drive
+        target_drive:  "/dev/vda"
+
+        # Swapfile size in GB (0 to skip swapfile creation) 
+        swap_size: 4
+
+        # The Arch repository URL
+        arch_repo_url: "https://archive.archlinux.org/repos/last/$repo/os/$arch"
+
+        # The Linux kernel variant: "linux" or 'linux-lts" 
+        kernel_variant: "linux-lts"
+
+        hostname: "test_arch"
+        username: "arch"
+        no_password: false
+
+        # Time zone Region/City. The list is in /usr/share/zoneinfo/.
+        timezone: "Europe/Paris"
+
+        locale: "en_US.UTF-8"
+
+        # Network mode: dhcp or static
+        network_mode: static
+
+        # Network interface name
+        interface_name: enp1s0
+
+        # Network address
+        network_address: "192.168.166.67"
+
+        # Network mask (static mode only, in CIDR format)
+        network_cidr_mask: 27
+
+        # Network address in CIDR format (static mode only)
+        network_cidr: "{{ network_address }}/{{network_cidr_mask}}"
+        
+        # Gateway (static mode only)
+        network_gateway: 192.168.166.66
+
+        # List of DNS servers (static mode only)
+        network_dns_servers:
+        - 192.168.166.66
+        - 9.9.9.9
+        - 1.1.1.1
+
+        # List of DNS domains to be resolved (may be empty list)
+        network_dns_domains: [ ]

@@ -27,6 +27,9 @@ echo "$HOST" > /etc/hostname
 
 # adding your normal user with additional wheel group so can sudo
 useradd -m -G wheel -s /bin/bash "$USERNAME"
+{% if no_password %}
+  passwd --delete "$USERNAME"
+{% endif %}
 
 # adding public key both to root and user for ssh key access
 mkdir -m 700 "$HOME_DIR/.ssh"
